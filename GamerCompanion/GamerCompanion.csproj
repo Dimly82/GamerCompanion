@@ -9,11 +9,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Models\" />
-      <Folder Include="Helpers\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
       <PackageReference Include="LibreHardwareMonitorLib" Version="0.9.4" />
     </ItemGroup>

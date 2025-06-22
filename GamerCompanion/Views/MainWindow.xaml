@@ -10,11 +10,34 @@
     <Window.DataContext>
         <vm:MonitoringViewModel/>
     </Window.DataContext>
-    <Grid Margin="10">
-        <StackPanel>
-            <TextBlock Text="{Binding CpuLoad, StringFormat='CPU: {0:F1}%'}" FontSize="16" Margin="5"/>
-            <TextBlock Text="{Binding RamUsed, StringFormat='RAM: {0:F1} GB'}" FontSize="16" Margin="5"/>
-            <TextBlock Text="{Binding GpuLoad, StringFormat='GPU: {0:F1}%'}" FontSize="16" Margin="5"/>
+    <DockPanel Margin="10">
+        <StackPanel DockPanel.Dock="Top">
+            <TextBlock Text="{Binding CpuName}" FontSize="12" FontWeight="Bold" Margin="5,5,5,0"/>
+            <TextBlock Text="{Binding CpuLoad, StringFormat='Load: {0:F1}%'}" FontSize="14" Margin="5,0,5,0"/>
+            <TextBlock Text="{Binding CpuTemp, StringFormat='Temperature: {0:F1}'}" FontSize="14" Margin="5,0,5,5"/>
+
+            <TextBlock Text="{Binding GpuName}" FontSize="12" FontWeight="Bold" Margin="5,5,5,0"/>
+            <TextBlock Text="{Binding GpuLoad, StringFormat='Load: {0:F1}%'}" FontSize="14" Margin="5,0,5,0"/>
+            <TextBlock Text="{Binding GpuTemp, StringFormat='Temperature: {0} C'}" FontSize="14" Margin="5,0,5,0"/>
+            <TextBlock Text="{Binding GpuMemStatus, StringFormat='Memory: {0}'}" FontSize="14" Margin="5,0,5,5"/>
+
+            <TextBlock Text="RAM" FontSize="12" FontWeight="Bold" Margin="5,5,5,0"/>
+            <TextBlock Text="{Binding RamStatus, StringFormat='Usage: {0}'}" FontSize="14" Margin="5,0,5,5"/>
+
+            <TextBlock Text="{Binding ActiveGame, StringFormat='Game: {0}'}" FontSize="14" Margin="5"/>
         </StackPanel>
-    </Grid>
+
+        <StackPanel DockPanel.Dock="Bottom" Background="#EEE" VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
+            <Grid Margin="5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="Update interval (in ms):" VerticalAlignment="Center" Margin="0,0,5,0" Grid.Column="0"/>
+                <ComboBox SelectedValue="{Binding UpdateInterval}" ItemsSource="{Binding AvailableIntervals}" Grid.Column="1" VerticalAlignment="Center"/>
+            </Grid>
+        </StackPanel>
+    </DockPanel>
 </Window>
