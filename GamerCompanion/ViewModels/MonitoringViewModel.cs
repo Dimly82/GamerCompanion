@@ -1,7 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using GamerCompanion.Helpers;
 using GamerCompanion.Models;
 using GamerCompanion.Services;
+using GamerCompanion.Views;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 
@@ -9,6 +11,7 @@ namespace GamerCompanion.ViewModels;
 
 public partial class MonitoringViewModel : ObservableObject {
     private readonly SystemMonitoringService _monitoringService;
+    private readonly LoggerService _logger;
     private readonly System.Timers.Timer _timer;
 
     [ObservableProperty]
@@ -41,13 +44,19 @@ public partial class MonitoringViewModel : ObservableObject {
     [ObservableProperty]
     private string gpuName;
 
-    public ObservableCollection<GameInfo> KnownGames { get; } = new() { new GameInfo { Name = "Death Stranding", ProcessName = "DeathStranding" } };
+    public ObservableCollection<GameInfo> KnownGames { get; } = new() {
+        new GameInfo { Name = "Death Stranding", ProcessName = "DeathStranding" },
+        new GameInfo { Name = "Windows Terminal", ProcessName = "WindowsTerminal"}
+    };
 
     [ObservableProperty]
     private string? activeGame;
+    [ObservableProperty]
+    private bool isLogging;
 
     public MonitoringViewModel() {
         _monitoringService = new SystemMonitoringService();
+        _logger = new LoggerService("perfomance_log.csv");
 
         _timer = new System.Timers.Timer(1000);
         _timer.Elapsed += (s, e) => Refresh();
@@ -57,6 +66,26 @@ public partial class MonitoringViewModel : ObservableObject {
     partial void OnUpdateIntervalChanged(int value) {
         if (_timer != null)
             _timer.Interval = value;
+    }
+
+    private void LogCurrentData() {
+        if (_logger == null)
+            return;
+
+        var timestamp = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
+        string line = $"{timestamp},{CpuLoad:F1},{CpuTemp},{RamUsed:F1},{RamTotal:F1},{GpuLoad},{GpuTemp},{GpuMemUsed},{GpuMemTotal},{ActiveGame}";
+        _logger.Log(line);
+    }
+
+    [RelayCommand]
+    private void ToggleLogging() {
+        IsLogging = !IsLogging;
+    }
+
+    [RelayCommand]
+    private void ShowRegisteredGames() {
+        var window = new RegisteredGamesWindow(KnownGames);
+        window.ShowDialog();
     }
 
     private void Refresh() {
@@ -85,6 +114,9 @@ public partial class MonitoringViewModel : ObservableObject {
             game.IsRunning = runningProcesses.Contains(game.ProcessName.ToLower());
 
         ActiveGame = KnownGames.FirstOrDefault(g => g.IsRunning)?.Name ?? "None";
+
+        if (IsLogging)
+            LogCurrentData();
     }
 }
 

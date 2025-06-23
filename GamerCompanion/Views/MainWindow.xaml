@@ -6,6 +6,8 @@
         xmlns:local="clr-namespace:GamerCompanion.Views"
         xmlns:vm="clr-namespace:GamerCompanion.ViewModels"
         mc:Ignorable="d"
+        xmlns:ui="http://schemas.modernwpf.com/2019"
+        ui:WindowHelper.UseModernWindowStyle="True"
         Title="Gamer Companion" Height="450" Width="800">
     <Window.DataContext>
         <vm:MonitoringViewModel/>
@@ -14,11 +16,11 @@
         <StackPanel DockPanel.Dock="Top">
             <TextBlock Text="{Binding CpuName}" FontSize="12" FontWeight="Bold" Margin="5,5,5,0"/>
             <TextBlock Text="{Binding CpuLoad, StringFormat='Load: {0:F1}%'}" FontSize="14" Margin="5,0,5,0"/>
-            <TextBlock Text="{Binding CpuTemp, StringFormat='Temperature: {0:F1}'}" FontSize="14" Margin="5,0,5,5"/>
+            <TextBlock Text="{Binding CpuTemp, StringFormat='Temperature: {0:F1} °C'}" FontSize="14" Margin="5,0,5,5"/>
 
             <TextBlock Text="{Binding GpuName}" FontSize="12" FontWeight="Bold" Margin="5,5,5,0"/>
-            <TextBlock Text="{Binding GpuLoad, StringFormat='Load: {0:F1}%'}" FontSize="14" Margin="5,0,5,0"/>
-            <TextBlock Text="{Binding GpuTemp, StringFormat='Temperature: {0} C'}" FontSize="14" Margin="5,0,5,0"/>
+            <TextBlock Text="{Binding GpuLoad, StringFormat='Load: {0}%'}" FontSize="14" Margin="5,0,5,0"/>
+            <TextBlock Text="{Binding GpuTemp, StringFormat='Temperature: {0} °C'}" FontSize="14" Margin="5,0,5,0"/>
             <TextBlock Text="{Binding GpuMemStatus, StringFormat='Memory: {0}'}" FontSize="14" Margin="5,0,5,5"/>
 
             <TextBlock Text="RAM" FontSize="12" FontWeight="Bold" Margin="5,5,5,0"/>
@@ -27,16 +29,24 @@
             <TextBlock Text="{Binding ActiveGame, StringFormat='Game: {0}'}" FontSize="14" Margin="5"/>
         </StackPanel>
 
-        <StackPanel DockPanel.Dock="Bottom" Background="#EEE" VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
+        <StackPanel DockPanel.Dock="Bottom" VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
             <Grid Margin="5">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Text="Update interval (in ms):" VerticalAlignment="Center" Margin="0,0,5,0" Grid.Column="0"/>
                 <ComboBox SelectedValue="{Binding UpdateInterval}" ItemsSource="{Binding AvailableIntervals}" Grid.Column="1" VerticalAlignment="Center"/>
+
+                <Button Content="Games" Command="{Binding ShowRegisteredGamesCommand}" Margin="10,0,10,0" VerticalAlignment="Center" Grid.Column="3"/>
+
+                <TextBlock Text="{Binding IsLogging,StringFormat='Logging Status: {0}'}" VerticalAlignment="Center" Margin="0,0,5,0" Grid.Column="4"/>
+                <Button Content="Toggle Logging" Command="{Binding ToggleLoggingCommand}" VerticalAlignment="Center" Grid.Column="5"/>
             </Grid>
         </StackPanel>
     </DockPanel>
