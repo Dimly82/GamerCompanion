@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GamerCompanion.Views"
         xmlns:vm="clr-namespace:GamerCompanion.ViewModels"
+        xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
         mc:Ignorable="d"
         xmlns:ui="http://schemas.modernwpf.com/2019"
         ui:WindowHelper.UseModernWindowStyle="True"
@@ -12,25 +13,38 @@
     <Window.DataContext>
         <vm:MonitoringViewModel/>
     </Window.DataContext>
-    <DockPanel Margin="10">
-        <StackPanel DockPanel.Dock="Top">
-            <TextBlock Text="{Binding CpuName}" FontSize="12" FontWeight="Bold" Margin="5,5,5,0"/>
-            <TextBlock Text="{Binding CpuLoad, StringFormat='Load: {0:F1}%'}" FontSize="14" Margin="5,0,5,0"/>
-            <TextBlock Text="{Binding CpuTemp, StringFormat='Temperature: {0:F1} °C'}" FontSize="14" Margin="5,0,5,5"/>
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
 
-            <TextBlock Text="{Binding GpuName}" FontSize="12" FontWeight="Bold" Margin="5,5,5,0"/>
-            <TextBlock Text="{Binding GpuLoad, StringFormat='Load: {0}%'}" FontSize="14" Margin="5,0,5,0"/>
-            <TextBlock Text="{Binding GpuTemp, StringFormat='Temperature: {0} °C'}" FontSize="14" Margin="5,0,5,0"/>
-            <TextBlock Text="{Binding GpuMemStatus, StringFormat='Memory: {0}'}" FontSize="14" Margin="5,0,5,5"/>
+        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <TextBlock Text="{Binding CpuName}" FontSize="12" FontWeight="Bold" Margin="5,5,5,0"/>
+                <TextBlock Text="{Binding CpuLoad, StringFormat='Load: {0:F1}%'}" FontSize="14" Margin="5,0,5,0"/>
+                <Expander Header="CPU Graph" IsExpanded="False" Margin="5,0,5,0">
+                    <lvc:CartesianChart Series="{Binding CpuLoadSeries}" Height="150" LegendPosition="Hidden" Padding="10"/>
+                </Expander>
+                <TextBlock Text="{Binding CpuTemp, StringFormat='Temperature: {0:F1} °C'}" FontSize="14" Margin="5,0,5,5"/>
 
-            <TextBlock Text="RAM" FontSize="12" FontWeight="Bold" Margin="5,5,5,0"/>
-            <TextBlock Text="{Binding RamStatus, StringFormat='Usage: {0}'}" FontSize="14" Margin="5,0,5,5"/>
+                <TextBlock Text="{Binding GpuName}" FontSize="12" FontWeight="Bold" Margin="5,5,5,0"/>
+                <TextBlock Text="{Binding GpuLoad, StringFormat='Load: {0}%'}" FontSize="14" Margin="5,0,5,0"/>
+                <Expander Header="GPU Graph" IsExpanded="False" Margin="5,0,5,0">
+                    <lvc:CartesianChart Series="{Binding GpuLoadSeries}" Height="150" LegendPosition="Hidden" Padding="10"/>
+                </Expander>
+                <TextBlock Text="{Binding GpuTemp, StringFormat='Temperature: {0} °C'}" FontSize="14" Margin="5,0,5,0"/>
+                <TextBlock Text="{Binding GpuMemStatus, StringFormat='Memory: {0}'}" FontSize="14" Margin="5,0,5,5"/>
 
-            <TextBlock Text="{Binding ActiveGame, StringFormat='Game: {0}'}" FontSize="14" Margin="5"/>
-        </StackPanel>
+                <TextBlock Text="RAM" FontSize="12" FontWeight="Bold" Margin="5,5,5,0"/>
+                <TextBlock Text="{Binding RamStatus, StringFormat='Usage: {0}'}" FontSize="14" Margin="5,0,5,5"/>
 
-        <StackPanel DockPanel.Dock="Bottom" VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
-            <Grid Margin="5">
+                <TextBlock Text="{Binding ActiveGame, StringFormat='Game: {0}'}" FontSize="14" Margin="5"/>
+            </StackPanel>
+        </ScrollViewer>
+
+        <Border Grid.Row="1" Background="#EEE" Padding="5">
+            <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="100"/>
@@ -45,9 +59,9 @@
 
                 <Button Content="Games" Command="{Binding ShowRegisteredGamesCommand}" Margin="10,0,10,0" VerticalAlignment="Center" Grid.Column="3"/>
 
-                <TextBlock Text="{Binding IsLogging,StringFormat='Logging Status: {0}'}" VerticalAlignment="Center" Margin="0,0,5,0" Grid.Column="4"/>
+                <TextBlock Text="{Binding IsLogging, StringFormat='Logging Status: {0}'}" VerticalAlignment="Center" Margin="0,0,5,0" Grid.Column="4"/>
                 <Button Content="Toggle Logging" Command="{Binding ToggleLoggingCommand}" VerticalAlignment="Center" Grid.Column="5"/>
             </Grid>
-        </StackPanel>
-    </DockPanel>
+        </Border>
+    </Grid>
 </Window>

@@ -4,6 +4,8 @@ using GamerCompanion.Helpers;
 using GamerCompanion.Models;
 using GamerCompanion.Services;
 using GamerCompanion.Views;
+using LiveChartsCore;
+using LiveChartsCore.SkiaSharpView;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 
@@ -54,9 +56,30 @@ public partial class MonitoringViewModel : ObservableObject {
     [ObservableProperty]
     private bool isLogging;
 
+    private const int maxPoints = 60;
+    public ObservableCollection<double> CpuLoadHistory { get; } = new();
+    public ISeries[] CpuLoadSeries { get; }
+    public ObservableCollection<double> GpuLoadHistory { get; } = new();
+    public ISeries[] GpuLoadSeries { get; }
+
     public MonitoringViewModel() {
         _monitoringService = new SystemMonitoringService();
         _logger = new LoggerService("perfomance_log.csv");
+
+        CpuLoadSeries = new ISeries[] {
+            new LineSeries<double> {
+                Values = CpuLoadHistory,
+                Fill = null,
+                GeometrySize = 0
+            }
+        };
+        GpuLoadSeries = new ISeries[] {
+            new LineSeries<double> {
+                Values = GpuLoadHistory,
+                Fill = null,
+                GeometrySize = 0
+            }
+        };
 
         _timer = new System.Timers.Timer(1000);
         _timer.Elapsed += (s, e) => Refresh();
@@ -105,6 +128,13 @@ public partial class MonitoringViewModel : ObservableObject {
 
         OnPropertyChanged(nameof(RamStatus));
         OnPropertyChanged(nameof(GpuMemStatus));
+
+        if (CpuLoadHistory.Count >= maxPoints)
+            CpuLoadHistory.RemoveAt(0);
+        CpuLoadHistory.Add(CpuLoad);
+        if (GpuLoadHistory.Count >= maxPoints)
+            CpuLoadHistory.RemoveAt(0);
+        GpuLoadHistory.Add(GpuLoad);
 
         //string processName = ActiveWindowHelper.GetActiveProcessName();
         //ActiveGame = processName;
