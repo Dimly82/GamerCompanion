@@ -3,6 +3,11 @@
 namespace GamerCompanion.ViewModels;
 
 public partial class MainViewModel : ObservableObject {
-    [ObservableProperty]
-    private string title = "Gamer Companion";
+    public MonitoringViewModel Monitoring { get; }
+    public ReminderViewModel Reminders { get; }
+
+    public MainViewModel() {
+        Monitoring = new MonitoringViewModel();
+        Reminders = new ReminderViewModel();
+    }
 }
