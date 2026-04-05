@@ -8,7 +8,7 @@ public partial class App : System.Windows.Application {
     protected override void OnStartup(StartupEventArgs e) {
         base.OnStartup(e);
 
-        ModernWpf.ThemeManager.Current.ApplicationTheme = ModernWpf.ApplicationTheme.Light;
+        //ModernWpf.ThemeManager.Current.ApplicationTheme = ModernWpf.ApplicationTheme.Light;
 
         _trayIcon = new NotifyIcon {
             Icon = new Icon("Resources/tray_icon.ico"),

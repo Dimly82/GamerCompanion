@@ -13,7 +13,7 @@
     <Window.DataContext>
         <vm:MainViewModel/>
     </Window.DataContext>
-    <TabControl Margin="10" Background="AliceBlue">
+    <TabControl Margin="10">
         <TabItem Header="Monitoring">
             <Grid Margin="10" DataContext="{Binding Monitoring}">
                 <Grid.RowDefinitions>
@@ -45,7 +45,7 @@
                     </StackPanel>
                 </ScrollViewer>
 
-                <Border Grid.Row="1" Background="AliceBlue" Padding="5">
+                <Border Grid.Row="1" Padding="5">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
@@ -72,8 +72,8 @@
             <StackPanel Margin="10" DataContext="{Binding Reminders}">
                 <TextBlock Text="New Reminder:" FontSize="14" FontWeight="Bold" Margin="0,0,0,5"/>
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                    <TextBox Width="200" Text="{Binding NewReminderText}" Margin="0,0,5,0"/>
-                    <TextBox Width="80" Text="{Binding NewReminderTimeMinutes}" Margin="0,0,5,0"/>
+                    <TextBox Width="200" Text="{Binding NewReminderText}" ui:ControlHelper.PlaceholderText="Reminder text" Margin="0,0,5,0"/>
+                    <TextBox Width="80" Text="{Binding NewReminderTimeMinutes}" ui:ControlHelper.PlaceholderText="Minutes"  Margin="0,0,5,0"/>
                     <CheckBox Content="Repeating" IsChecked="{Binding NewReminderRepeating}"/>
                     <Button Content="Add" Command="{Binding AddReminderCommand}"/>
                 </StackPanel>
@@ -82,8 +82,9 @@
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding Text}" VerticalAlignment="Center" Width="200"/>
-                                <TextBlock Text="{Binding TimeMinutes,StringFormat=' in {0} min'}" VerticalAlignment="Center" Width="100"/>
+                                <TextBlock Width="200" Text="{Binding Text}" Margin="0,0,5,0"/>
+                                <TextBlock Text="{Binding TimeLeft}" VerticalAlignment="Center" Width="100"/>
+                                <TextBlock Text="{Binding TargetTimeFormatted}" VerticalAlignment="Center" Width="100"/>
                                 <Button Content="Remove" Command="{Binding DataContext.RemoveReminderCommand,RelativeSource={RelativeSource AncestorType=ListBox}}" CommandParameter="{Binding}"/>
                             </StackPanel>
                         </DataTemplate>

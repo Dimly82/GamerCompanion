@@ -64,7 +64,7 @@ public partial class MonitoringViewModel : ObservableObject {
 
     public MonitoringViewModel() {
         _monitoringService = new SystemMonitoringService();
-        _logger = new LoggerService("perfomance_log.csv");
+        _logger = new LoggerService("C:\\Users\\pdimo\\source\\repos\\GamerCompanion\\Logs");
 
         CpuLoadSeries = new ISeries[] {
             new LineSeries<double> {
