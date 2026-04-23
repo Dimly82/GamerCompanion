@@ -15,6 +15,7 @@ public partial class MonitoringViewModel : ObservableObject {
     private readonly SystemMonitoringService _monitoringService;
     private readonly LoggerService _logger;
     private readonly System.Timers.Timer _timer;
+    private AppRegisterService _appRegisterService;
 
     [ObservableProperty]
     private int updateInterval = 1000;
@@ -46,13 +47,13 @@ public partial class MonitoringViewModel : ObservableObject {
     [ObservableProperty]
     private string gpuName;
 
-    public ObservableCollection<GameInfo> KnownGames { get; } = new() {
-        new GameInfo { Name = "Death Stranding", ProcessName = "DeathStranding" },
-        new GameInfo { Name = "Windows Terminal", ProcessName = "WindowsTerminal"}
-    };
+    //public ObservableCollection<GameInfo> KnownGames { get; } = new() {
+    //    new GameInfo { Name = "Death Stranding", ProcessName = "DeathStranding" },
+    //    new GameInfo { Name = "Windows Terminal", ProcessName = "WindowsTerminal"}
+    //};
 
     [ObservableProperty]
-    private string? activeGame;
+    private string? activeApp;
     [ObservableProperty]
     private bool isLogging;
 
@@ -84,6 +85,9 @@ public partial class MonitoringViewModel : ObservableObject {
         _timer = new System.Timers.Timer(1000);
         _timer.Elapsed += (s, e) => Refresh();
         _timer.Start();
+
+        _appRegisterService = new AppRegisterService(
+            "C:\\Users\\pdimo\\source\\repos\\GamerCompanion\\AppRegistry.json");
     }
 
     partial void OnUpdateIntervalChanged(int value) {
@@ -96,7 +100,7 @@ public partial class MonitoringViewModel : ObservableObject {
             return;
 
         var timestamp = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
-        string line = $"{timestamp},{CpuLoad:F1},{CpuTemp},{RamUsed:F1},{RamTotal:F1},{GpuLoad},{GpuTemp},{GpuMemUsed},{GpuMemTotal},{ActiveGame}";
+        string line = $"{timestamp},{CpuLoad:F1},{CpuTemp},{RamUsed:F1},{RamTotal:F1},{GpuLoad},{GpuTemp},{GpuMemUsed},{GpuMemTotal},{ActiveApp}";
         _logger.Log(line);
     }
 
@@ -107,7 +111,7 @@ public partial class MonitoringViewModel : ObservableObject {
 
     [RelayCommand]
     private void ShowRegisteredGames() {
-        var window = new RegisteredGamesWindow(KnownGames);
+        var window = new RegisteredGamesWindow(_appRegisterService);
         window.ShowDialog();
     }
 
@@ -133,17 +137,17 @@ public partial class MonitoringViewModel : ObservableObject {
             CpuLoadHistory.RemoveAt(0);
         CpuLoadHistory.Add(CpuLoad);
         if (GpuLoadHistory.Count >= maxPoints)
-            CpuLoadHistory.RemoveAt(0);
+            GpuLoadHistory.RemoveAt(0);
         GpuLoadHistory.Add(GpuLoad);
 
         //string processName = ActiveWindowHelper.GetActiveProcessName();
         //ActiveGame = processName;
 
         var runningProcesses = Process.GetProcesses().Select(p => p.ProcessName.ToLower()).ToHashSet();
-        foreach (var game in KnownGames)
+        foreach (var game in _appRegisterService.Apps)
             game.IsRunning = runningProcesses.Contains(game.ProcessName.ToLower());
 
-        ActiveGame = KnownGames.FirstOrDefault(g => g.IsRunning)?.Name ?? "None";
+        ActiveApp = _appRegisterService.GetActiveApp(runningProcesses);
 
         if (IsLogging)
             LogCurrentData();

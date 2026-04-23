@@ -41,7 +41,7 @@
                         <TextBlock Text="RAM" FontSize="12" FontWeight="Bold" Margin="5,5,5,0"/>
                         <TextBlock Text="{Binding RamStatus, StringFormat='Usage: {0}'}" FontSize="14" Margin="5,0,5,5"/>
 
-                        <TextBlock Text="{Binding ActiveGame, StringFormat='Game: {0}'}" FontSize="14" Margin="5"/>
+                        <TextBlock Text="{Binding ActiveApp, StringFormat='Running App: {0}'}" FontSize="14" Margin="5"/>
                     </StackPanel>
                 </ScrollViewer>
 
@@ -59,7 +59,7 @@
                         <TextBlock Text="Update interval (in ms):" VerticalAlignment="Center" Margin="0,0,5,0" Grid.Column="0"/>
                         <ComboBox SelectedValue="{Binding UpdateInterval}" ItemsSource="{Binding AvailableIntervals}" Grid.Column="1" VerticalAlignment="Center"/>
 
-                        <Button Content="Games" Command="{Binding ShowRegisteredGamesCommand}" Margin="10,0,10,0" VerticalAlignment="Center" Grid.Column="3"/>
+                        <Button Content="Apps" Command="{Binding ShowRegisteredGamesCommand}" Margin="10,0,10,0" VerticalAlignment="Center" Grid.Column="3"/>
 
                         <TextBlock Text="{Binding IsLogging, StringFormat='Logging Status: {0}'}" VerticalAlignment="Center" Margin="0,0,5,0" Grid.Column="4"/>
                         <Button Content="Toggle Logging" Command="{Binding ToggleLoggingCommand}" VerticalAlignment="Center" Grid.Column="5"/>
