@@ -13,85 +13,143 @@
     <Window.DataContext>
         <vm:MainViewModel/>
     </Window.DataContext>
-    <TabControl Margin="10">
-        <TabItem Header="Monitoring">
-            <Grid Margin="10" DataContext="{Binding Monitoring}">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-                <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
-                    <StackPanel>
-                        <TextBlock Text="{Binding CpuName}" FontSize="12" FontWeight="Bold" Margin="5,5,5,0"/>
-                        <TextBlock Text="{Binding CpuLoad, StringFormat='Load: {0:F1}%'}" FontSize="14" Margin="5,0,5,0"/>
-                        <Expander Header="CPU Graph" IsExpanded="False" Margin="5,0,5,0">
-                            <lvc:CartesianChart Series="{Binding CpuLoadSeries}" Height="150" LegendPosition="Hidden" Padding="10"/>
-                        </Expander>
-                        <TextBlock Text="{Binding CpuTemp, StringFormat='Temperature: {0:F1} °C'}" FontSize="14" Margin="5,0,5,5"/>
+        <Button Content="⚙" 
+            Command="{Binding OpenSettingsCommand}"
+            HorizontalAlignment="Right"
+            Margin="0,5,5,0"
+            Grid.Row="0"/>
+        <TabControl Margin="10" Grid.Row="1">
+            <TabItem Header="Monitoring">
+                <Grid Margin="10" DataContext="{Binding Monitoring}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
 
-                        <TextBlock Text="{Binding GpuName}" FontSize="12" FontWeight="Bold" Margin="5,5,5,0"/>
-                        <TextBlock Text="{Binding GpuLoad, StringFormat='Load: {0}%'}" FontSize="14" Margin="5,0,5,0"/>
-                        <Expander Header="GPU Graph" IsExpanded="False" Margin="5,0,5,0">
-                            <lvc:CartesianChart Series="{Binding GpuLoadSeries}" Height="150" LegendPosition="Hidden" Padding="10"/>
-                        </Expander>
-                        <TextBlock Text="{Binding GpuTemp, StringFormat='Temperature: {0} °C'}" FontSize="14" Margin="5,0,5,0"/>
-                        <TextBlock Text="{Binding GpuMemStatus, StringFormat='Memory: {0}'}" FontSize="14" Margin="5,0,5,5"/>
+                    <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <TextBlock Text="{Binding CpuName}" FontSize="12" FontWeight="Bold" Margin="5,5,5,0"/>
+                            <TextBlock Text="{Binding CpuLoad, StringFormat='Load: {0:F1}%'}" FontSize="14" Margin="5,0,5,0"/>
+                            <Expander Header="CPU Graph" IsExpanded="False" Margin="5,0,5,0">
+                                <lvc:CartesianChart Series="{Binding CpuLoadSeries}" Height="150" LegendPosition="Hidden" Padding="10"/>
+                            </Expander>
+                            <TextBlock Text="{Binding CpuTemp, StringFormat='Temperature: {0:F1} °C'}" FontSize="14" Margin="5,0,5,5"/>
 
-                        <TextBlock Text="RAM" FontSize="12" FontWeight="Bold" Margin="5,5,5,0"/>
-                        <TextBlock Text="{Binding RamStatus, StringFormat='Usage: {0}'}" FontSize="14" Margin="5,0,5,5"/>
+                            <TextBlock Text="{Binding GpuName}" FontSize="12" FontWeight="Bold" Margin="5,5,5,0"/>
+                            <TextBlock Text="{Binding GpuLoad, StringFormat='Load: {0}%'}" FontSize="14" Margin="5,0,5,0"/>
+                            <Expander Header="GPU Graph" IsExpanded="False" Margin="5,0,5,0">
+                                <lvc:CartesianChart Series="{Binding GpuLoadSeries}" Height="150" LegendPosition="Hidden" Padding="10"/>
+                            </Expander>
+                            <TextBlock Text="{Binding GpuTemp, StringFormat='Temperature: {0} °C'}" FontSize="14" Margin="5,0,5,0"/>
+                            <TextBlock Text="{Binding GpuMemStatus, StringFormat='Memory: {0}'}" FontSize="14" Margin="5,0,5,5"/>
 
-                        <TextBlock Text="{Binding ActiveApp, StringFormat='Running App: {0}'}" FontSize="14" Margin="5"/>
+                            <TextBlock Text="RAM" FontSize="12" FontWeight="Bold" Margin="5,5,5,0"/>
+                            <TextBlock Text="{Binding RamStatus, StringFormat='Usage: {0}'}" FontSize="14" Margin="5,0,5,5"/>
+
+                            <TextBlock Text="{Binding ActiveApp, StringFormat='Running App: {0}'}" FontSize="14" Margin="5"/>
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    <Border Grid.Row="1" Padding="5">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Button Content="Optimize Memory" Command="{Binding OptimizeMemoryCommand}" VerticalAlignment="Center" Grid.Column="1"/>
+
+                            <Button Content="Apps" Command="{Binding ShowRegisteredGamesCommand}" Margin="10,0,10,0" VerticalAlignment="Center" Grid.Column="3"/>
+
+                            <TextBlock Text="{Binding IsLogging, StringFormat='Logging Status: {0}'}" VerticalAlignment="Center" Margin="0,0,5,0" Grid.Column="4"/>
+                            <Button Content="Toggle Logging" Command="{Binding ToggleLoggingCommand}" VerticalAlignment="Center" Grid.Column="5"/>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Reminders">
+                <StackPanel Margin="10" DataContext="{Binding Reminders}">
+                    <TextBlock Text="New Reminder:" FontSize="14" FontWeight="Bold" Margin="0,0,0,5"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                        <TextBox Width="200" Text="{Binding NewReminderText}" ui:ControlHelper.PlaceholderText="Reminder text" Margin="0,0,5,0"/>
+                        <TextBox Width="80" Text="{Binding NewReminderTimeMinutes}" ui:ControlHelper.PlaceholderText="Minutes"  Margin="0,0,5,0"/>
+                        <CheckBox Content="Repeating" IsChecked="{Binding NewReminderRepeating}"/>
+                        <Button Content="Add" Command="{Binding AddReminderCommand}"/>
+                    </StackPanel>
+
+                    <ListBox ItemsSource="{Binding Reminders}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Width="200" Text="{Binding Text}" Margin="0,0,5,0"/>
+                                    <TextBlock Text="{Binding TimeLeft}" VerticalAlignment="Center" Width="100"/>
+                                    <TextBlock Text="{Binding TargetTimeFormatted}" VerticalAlignment="Center" Width="100"/>
+                                    <Button Content="Remove" Command="{Binding DataContext.RemoveReminderCommand,RelativeSource={RelativeSource AncestorType=ListBox}}" CommandParameter="{Binding}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </StackPanel>
+            </TabItem>
+
+            <TabItem Header="Analytics">
+                <ScrollViewer>
+                    <StackPanel Margin="10" DataContext="{Binding Monitoring}">
+                        <TextBlock Text="Recommendations" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+                        <ListBox ItemsSource="{Binding Recommendations}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Severity}" Width="80" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{Binding Message}" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+
+                        <TextBlock Text="Historical Analysis" FontSize="16" FontWeight="Bold" Margin="0,15,0,10"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                            <TextBlock Text="From:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                            <DatePicker SelectedDate="{Binding HistoryFrom}" Margin="0,0,10,0"/>
+                            <TextBlock Text="To:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                            <DatePicker SelectedDate="{Binding HistoryTo}" Margin="0,0,10,0"/>
+                            <Button Content="Analyze" Command="{Binding AnalyzeHistoryCommand}"/>
+                        </StackPanel>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="CPU" FontWeight="Bold" Margin="0,0,0,5"/>
+                                <TextBlock Text="{Binding HistoryReport.AvgCpuLoad, StringFormat='Avg Load: {0:F1}%'}"/>
+                                <TextBlock Text="{Binding HistoryReport.MaxCpuLoad, StringFormat='Max Load: {0:F1}%'}"/>
+                                <TextBlock Text="{Binding HistoryReport.AvgCpuTemp, StringFormat='Avg Temp: {0:F1}°C'}"/>
+                                <TextBlock Text="{Binding HistoryReport.MaxCpuTemp, StringFormat='Max Temp: {0:F1}°C'}"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="GPU" FontWeight="Bold" Margin="0,0,0,5"/>
+                                <TextBlock Text="{Binding HistoryReport.AvgGpuLoad, StringFormat='Avg Load: {0:F1}%'}"/>
+                                <TextBlock Text="{Binding HistoryReport.MaxGpuLoad, StringFormat='Max Load: {0:F1}%'}"/>
+                                <TextBlock Text="{Binding HistoryReport.AvgGpuTemp, StringFormat='Avg Temp: {0:F1}°C'}"/>
+                                <TextBlock Text="{Binding HistoryReport.MaxGpuTemp, StringFormat='Max Temp: {0:F1}°C'}"/>
+                            </StackPanel>
+                        </Grid>
                     </StackPanel>
                 </ScrollViewer>
-
-                <Border Grid.Row="1" Padding="5">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="100"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-
-                        <TextBlock Text="Update interval (in ms):" VerticalAlignment="Center" Margin="0,0,5,0" Grid.Column="0"/>
-                        <ComboBox SelectedValue="{Binding UpdateInterval}" ItemsSource="{Binding AvailableIntervals}" Grid.Column="1" VerticalAlignment="Center"/>
-
-                        <Button Content="Apps" Command="{Binding ShowRegisteredGamesCommand}" Margin="10,0,10,0" VerticalAlignment="Center" Grid.Column="3"/>
-
-                        <TextBlock Text="{Binding IsLogging, StringFormat='Logging Status: {0}'}" VerticalAlignment="Center" Margin="0,0,5,0" Grid.Column="4"/>
-                        <Button Content="Toggle Logging" Command="{Binding ToggleLoggingCommand}" VerticalAlignment="Center" Grid.Column="5"/>
-                    </Grid>
-                </Border>
-            </Grid>
-        </TabItem>
-
-        <TabItem Header="Reminders">
-            <StackPanel Margin="10" DataContext="{Binding Reminders}">
-                <TextBlock Text="New Reminder:" FontSize="14" FontWeight="Bold" Margin="0,0,0,5"/>
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                    <TextBox Width="200" Text="{Binding NewReminderText}" ui:ControlHelper.PlaceholderText="Reminder text" Margin="0,0,5,0"/>
-                    <TextBox Width="80" Text="{Binding NewReminderTimeMinutes}" ui:ControlHelper.PlaceholderText="Minutes"  Margin="0,0,5,0"/>
-                    <CheckBox Content="Repeating" IsChecked="{Binding NewReminderRepeating}"/>
-                    <Button Content="Add" Command="{Binding AddReminderCommand}"/>
-                </StackPanel>
-
-                <ListBox ItemsSource="{Binding Reminders}">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Width="200" Text="{Binding Text}" Margin="0,0,5,0"/>
-                                <TextBlock Text="{Binding TimeLeft}" VerticalAlignment="Center" Width="100"/>
-                                <TextBlock Text="{Binding TargetTimeFormatted}" VerticalAlignment="Center" Width="100"/>
-                                <Button Content="Remove" Command="{Binding DataContext.RemoveReminderCommand,RelativeSource={RelativeSource AncestorType=ListBox}}" CommandParameter="{Binding}"/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </StackPanel>
-        </TabItem>
-    </TabControl>
-
+            </TabItem>
+        </TabControl>
+    </Grid>
 </Window>

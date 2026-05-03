@@ -16,6 +16,7 @@ public partial class MonitoringViewModel : ObservableObject {
     private readonly LoggerService _logger;
     private readonly System.Timers.Timer _timer;
     private AppRegisterService _appRegisterService;
+    private readonly AnalyzerService _analyzerService = new();
 
     [ObservableProperty]
     private int updateInterval = 1000;
@@ -62,10 +63,29 @@ public partial class MonitoringViewModel : ObservableObject {
     public ISeries[] CpuLoadSeries { get; }
     public ObservableCollection<double> GpuLoadHistory { get; } = new();
     public ISeries[] GpuLoadSeries { get; }
+    public ObservableCollection<Recommendation> Recommendations { get; } = new();
+    [ObservableProperty]
+    private DateTime historyFrom = DateTime.Today.AddDays(-7);
+    [ObservableProperty]
+    private DateTime historyTo = DateTime.Today;
 
-    public MonitoringViewModel() {
+    [ObservableProperty]
+    private AnalysisReport historyReport = new();
+
+    [RelayCommand]
+    private void AnalyzeHistory() {
+        HistoryReport = _analyzerService.AnalyzeHistory(LogFolder, HistoryFrom, HistoryTo);
+    }
+
+    private const string LogFolder = "C:\\Users\\pdimo\\source\\repos\\GamerCompanion\\Logs";
+    private readonly SettingsService _settingsService;
+
+    public MonitoringViewModel(SettingsService settingsService) {
+        _settingsService = settingsService;
+        ApplySettings();
+
         _monitoringService = new SystemMonitoringService();
-        _logger = new LoggerService("C:\\Users\\pdimo\\source\\repos\\GamerCompanion\\Logs");
+        _logger = new LoggerService(LogFolder);
 
         CpuLoadSeries = new ISeries[] {
             new LineSeries<double> {
@@ -88,6 +108,16 @@ public partial class MonitoringViewModel : ObservableObject {
 
         _appRegisterService = new AppRegisterService(
             "C:\\Users\\pdimo\\source\\repos\\GamerCompanion\\AppRegistry.json");
+    }
+
+    public void ApplySettings() {
+        var s = _settingsService.Settings;
+        _analyzerService.CpuTempThreshold = s.CpuTempThreshold;
+        _analyzerService.GpuTempThreshold = s.GpuTempThreshold;
+        _analyzerService.CpuLoadThreshold = s.CpuLoadThreshold;
+        _analyzerService.GpuLoadThreshold = s.GpuLoadThreshold;
+        _analyzerService.RamUsageThreshold = s.RamUsageThreshold;
+        UpdateInterval = s.UpdateInterval;
     }
 
     partial void OnUpdateIntervalChanged(int value) {
@@ -114,6 +144,20 @@ public partial class MonitoringViewModel : ObservableObject {
         var window = new RegisteredGamesWindow(_appRegisterService);
         window.ShowDialog();
     }
+
+    [RelayCommand]
+    private void OptimizeMemory() {
+        var before = RamUsed;
+        MemoryOptimizer.Optimize();
+        _monitoringService.Update();
+        RamUsed = _monitoringService.RamUsed;
+        var freed = before - RamUsed;
+
+        App.Current.Dispatcher.Invoke(() => {
+            new ToastWindow($"Memory optimized. Freed: {freed:F1} GB").Show();
+        });
+    }
+    private DateTime _lastToastTime = DateTime.MinValue;
 
     private void Refresh() {
         _monitoringService.Update();
@@ -148,6 +192,23 @@ public partial class MonitoringViewModel : ObservableObject {
             game.IsRunning = runningProcesses.Contains(game.ProcessName.ToLower());
 
         ActiveApp = _appRegisterService.GetActiveApp(runningProcesses);
+
+        if (_settingsService.Settings.AutoLogging)
+            IsLogging = ActiveApp != null;
+
+        var results = _analyzerService.Analyze(CpuTemp, CpuLoad, GpuTemp, GpuLoad, RamUsed, RamTotal);
+
+        App.Current.Dispatcher.Invoke(() => {
+            Recommendations.Clear();
+            foreach (var r in results)
+                Recommendations.Add(r);
+
+            if (DateTime.Now - _lastToastTime > TimeSpan.FromMinutes(5)) {
+                foreach (var r in results.Where(r => r.Severity == RecommendationSeverity.Critical))
+                    new ToastWindow(r.Message).Show();
+                _lastToastTime = DateTime.Now;
+            }
+        });
 
         if (IsLogging)
             LogCurrentData();

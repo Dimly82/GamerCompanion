@@ -1,4 +1,7 @@
-﻿using System.Windows;
+﻿using GamerCompanion.Services;
+using ModernWpf;
+using System.Diagnostics;
+using System.Windows;
 
 namespace GamerCompanion;
 
@@ -9,6 +12,16 @@ public partial class App : System.Windows.Application {
         base.OnStartup(e);
 
         //ModernWpf.ThemeManager.Current.ApplicationTheme = ModernWpf.ApplicationTheme.Light;
+
+        var settings = new SettingsService("settings.json");
+        ThemeManager.Current.ApplicationTheme = settings.Settings.Theme switch {
+            "Dark" => ApplicationTheme.Dark,
+            "Light" => ApplicationTheme.Light,
+            _ => null
+        };
+
+        if (settings.Settings.Theme == "System")
+            ThemeManager.Current.ApplicationTheme = null;
 
         _trayIcon = new NotifyIcon {
             Icon = new Icon("Resources/tray_icon.ico"),

@@ -22,7 +22,7 @@ public class LoggerService {
             if (!File.Exists(filePath))
                 File.WriteAllText(
                     filePath,
-                    "Timestamp,CPU Load %,CPU Temp °C,RAM Used GB,RAM Total GB,GPU Load %,GPU Temp °C,GPU Mem Used MB,GPU Mem Total MB,Active Game\n");
+                    "Timestamp,CPU Load %,CPU Temp °C,RAM Used GB,RAM Total GB,GPU Load %,GPU Temp °C,GPU Mem Used MB,GPU Mem Total MB,Active App\n");
             File.AppendAllText(filePath, csvLine + Environment.NewLine, Encoding.UTF8);
         }
     }

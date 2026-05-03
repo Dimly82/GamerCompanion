@@ -1,10 +1,13 @@
-﻿using GamerCompanion.ViewModels;
+﻿using CommunityToolkit.Mvvm.Input;
+using GamerCompanion.Services;
+using GamerCompanion.ViewModels;
 using System.ComponentModel;
 using System.Windows;
 
 namespace GamerCompanion.Views;
 
 public partial class MainWindow : Window {
+
     public MainWindow() {
         InitializeComponent();
     }
